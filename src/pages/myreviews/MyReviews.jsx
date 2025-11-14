@@ -16,6 +16,7 @@ import {
 } from "@headlessui/react";
 import MyReviewCard from "../../components/MyReviewCard";
 import ConfirmDelete from "../../components/ConfirmDelete";
+import ShareModal from "../../components/ShareModal";
 
 const MyReviews = () => {
   const [search, setSearch] = useState("");
@@ -156,101 +157,15 @@ const MyReviews = () => {
         </div>
       </Dialog>
 
-      {/* Share Modal */}
-      <Dialog open={openShare} onClose={setOpenShare}>
-        <DialogBackdrop className="fixed inset-0 bg-black/40" />
-
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <DialogPanel className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
-            <DialogTitle className="text-lg font-bold mb-3">
-              Share Review
-            </DialogTitle>
-
-            {/* Search Box */}
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Search users by name or email..."
-                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => {
-                  setSearch(e.target.value.toLowerCase());
-                }}
-              />
-            </div>
-
-            {/* User List */}
-            <div className="max-h-72 overflow-y-auto border rounded-lg p-2 bg-gray-50">
-              {users
-                .filter((u) => {
-                  const term = search?.trim() || "";
-                  return (
-                    u.email.toLowerCase().includes(term) ||
-                    `${u.firstname} ${u.lastname}`.toLowerCase().includes(term)
-                  );
-                })
-                .map((user) => (
-                  <label
-                    key={user.uid}
-                    className="flex items-center justify-between bg-white hover:bg-gray-100 transition p-2 rounded mb-1 cursor-pointer border"
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        value={user.uid}
-                        checked={selectedUserIds.includes(user.uid)}
-                        onChange={(e) => {
-                          const id = Number(e.target.value);
-                          setSelectedUserIds((prev) =>
-                            prev.includes(id)
-                              ? prev.filter((v) => v !== id)
-                              : [...prev, id]
-                          );
-                        }}
-                        className="h-4 w-4"
-                      />
-
-                      <div className="leading-tight">
-                        <p className="font-medium text-sm">
-                          {user.firstname} {user.lastname}
-                        </p>
-                        <p className="text-xs text-gray-600">{user.email}</p>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-
-              {/* No users found */}
-              {users.filter((u) => {
-                const term = search?.trim() || "";
-                return (
-                  u.email.toLowerCase().includes(term) ||
-                  `${u.firstname} ${u.lastname}`.toLowerCase().includes(term)
-                );
-              }).length === 0 && (
-                <p className="text-center text-gray-500 text-sm py-6">
-                  No matching users found
-                </p>
-              )}
-            </div>
-
-            {/* Footer */}
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                className="px-4 py-2 bg-gray-200 rounded-lg"
-                onClick={() => setOpenShare(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-green-600 text-white rounded-lg"
-                onClick={saveShare}
-              >
-                Share
-              </button>
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
+      {/* Reusable Share Modal */}
+      <ShareModal
+        openShare={openShare}
+        setOpenShare={setOpenShare}
+        users={users}
+        selectedUserIds={selectedUserIds}
+        setSelectedUserIds={setSelectedUserIds}
+        saveShare={saveShare}
+      />
 
       <ConfirmDelete
         open={openDelete}
