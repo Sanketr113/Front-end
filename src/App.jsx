@@ -2,14 +2,15 @@ import Layout from "./layouts/Layout";
 import { Route, Routes } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
-import Home from "./pages/Home/home";
 import AllReviews from "./pages/allreviews/AllReviews";
 import MyReviews from "./pages/myreviews/MyReviews";
 import Profile from "./pages/profile/Profile";
 import SharedWithMe from "./pages/sharedwithme/SharedWithMe";
 
-import AllMovies from "./pages/allmovies/allmovies";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import AllMovies from "./pages/allmovies/AllMovies";
+import Home from './pages/home/Home';
+
 
 export default function App() {
     return (
