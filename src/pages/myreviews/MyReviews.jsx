@@ -1,192 +1,264 @@
 import React, { useEffect, useState } from "react";
-import { getMyReviews, updateReview, shareReview, getAllusers, deleteReview } from "../../apis/reviewAPI";
+import {
+  getMyReviews,
+  updateReview,
+  shareReview,
+  getAllusers,
+  deleteReview,
+} from "../../apis/reviewAPI";
 import { toast } from "react-toastify";
 
 import {
-    Dialog,
-    DialogBackdrop,
-    DialogPanel,
-    DialogTitle,
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
 } from "@headlessui/react";
 import MyReviewCard from "../../components/MyReviewCard";
 import ConfirmDelete from "../../components/ConfirmDelete";
 
 const MyReviews = () => {
-    const [reviews, setReviews] = useState([]);
-    const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
-    const [openEdit, setOpenEdit] = useState(false);
-    const [openShare, setOpenShare] = useState(false);
-    const [openDelete, setOpenDelete] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [users, setUsers] = useState([]);
 
-    const [selectedReview, setSelectedReview] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openShare, setOpenShare] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-    const [form, setForm] = useState({ rating: "", review: "" });
-    const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [selectedReview, setSelectedReview] = useState(null);
 
-    const loadReviews = async () => {
-        const res = await getMyReviews();
-        if (res.status === "success") setReviews(res.data);
-        else toast.error("Failed to load your reviews");
-    };
+  const [form, setForm] = useState({ rating: "", review: "" });
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
 
-    const loadUsers = async () => {
-        const res = await getAllusers();
-        if (res.status === "success") setUsers(res.data);
-        else toast.error("Failed to load users");
-    };
+  const loadReviews = async () => {
+    const res = await getMyReviews();
+    if (res.status === "success") setReviews(res.data);
+    else toast.error("Failed to load your reviews");
+  };
 
-    useEffect(() => {
-        loadReviews();
-        loadUsers();
-    }, []);
+  const loadUsers = async () => {
+    const res = await getAllusers();
+    if (res.status === "success") setUsers(res.data);
+    else toast.error("Failed to load users");
+  };
 
-    const editReview = (review) => {
-        setSelectedReview(review);
-        setForm({ rating: review.rating, review: review.review });
-        setOpenEdit(true);
-    };
+  useEffect(() => {
+    loadReviews();
+    loadUsers();
+  }, []);
 
-    const saveReview = async () => {
-        const res = await updateReview(selectedReview.rid, form.rating, form.review);
+  const editReview = (review) => {
+    setSelectedReview(review);
+    setForm({ rating: review.rating, review: review.review });
+    setOpenEdit(true);
+  };
 
-        if (res.status === "success") {
-            toast.success("Review updated");
-            setOpenEdit(false);
-            loadReviews();
-        } else toast.error("Failed to update review");
-    };
+  const saveReview = async () => {
+    const res = await updateReview(
+      selectedReview.rid,
+      form.rating,
+      form.review
+    );
 
-    const openShareModal = (review) => {
-        setSelectedReview(review);
-        setSelectedUserIds([]);
-        setOpenShare(true);
-    };
+    if (res.status === "success") {
+      toast.success("Review updated");
+      setOpenEdit(false);
+      loadReviews();
+    } else toast.error("Failed to update review");
+  };
 
-    const saveShare = async () => {
-        const res = await shareReview(selectedReview.rid, selectedUserIds);
+  const openShareModal = (review) => {
+    setSelectedReview(review);
+    setSelectedUserIds([]);
+    setOpenShare(true);
+  };
 
-        if (res.status === "success") {
-            toast.success("Review shared");
-            setOpenShare(false);
-        } else toast.error("Failed to share review");
-    };
+  const saveShare = async () => {
+    const res = await shareReview(selectedReview.rid, selectedUserIds);
 
-    // Delete review
-    const askDelete = (review) => {
-        setSelectedReview(review);
-        setOpenDelete(true);
-    };
+    if (res.status === "success") {
+      toast.success("Review shared");
+      setOpenShare(false);
+    } else toast.error("Failed to share review");
+  };
 
-    const confirmDelete = async () => {
-        const res = await deleteReview(selectedReview.rid);
-        if (res.status === "success") {
-            toast.success("Review deleted");
-            setOpenDelete(false);
-            loadReviews();
-        } else toast.error("Failed to delete");
-    };
+  // Delete review
+  const askDelete = (review) => {
+    setSelectedReview(review);
+    setOpenDelete(true);
+  };
 
-    return (
-        <div className="mx-auto max-w-7xl px-6 py-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">My Reviews</h2>
+  const confirmDelete = async () => {
+    const res = await deleteReview(selectedReview.rid);
+    if (res.status === "success") {
+      toast.success("Review deleted");
+      setOpenDelete(false);
+      loadReviews();
+    } else toast.error("Failed to delete");
+  };
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {reviews.map((review) => (
-                    <MyReviewCard
-                        key={review.rid}
-                        review={review}
-                        onEdit={editReview}
-                        onShare={openShareModal}
-                        onDelete={askDelete}
-                    />
-                ))}
+  return (
+    <div className="mx-auto max-w-7xl px-6 py-16">
+      <h2 className="text-3xl font-bold text-gray-900 mb-8">My Reviews</h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {reviews.map((review) => (
+          <MyReviewCard
+            key={review.rid}
+            review={review}
+            onEdit={editReview}
+            onShare={openShareModal}
+            onDelete={askDelete}
+          />
+        ))}
+      </div>
+
+      {/* Edit Modal */}
+      <Dialog open={openEdit} onClose={setOpenEdit}>
+        <DialogBackdrop className="fixed inset-0 bg-black/40" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <DialogPanel className="bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
+            <DialogTitle className="text-lg font-bold">Edit Review</DialogTitle>
+
+            <div className="mt-4">
+              <label className="font-medium">Rating</label>
+              <input
+                className="w-full mt-1 border p-2 rounded"
+                value={form.rating}
+                onChange={(e) => setForm({ ...form, rating: e.target.value })}
+              />
+
+              <label className="font-medium mt-3 block">Review</label>
+              <textarea
+                className="w-full border p-2 rounded"
+                value={form.review}
+                onChange={(e) => setForm({ ...form, review: e.target.value })}
+              />
             </div>
 
-            {/* Edit Modal */}
-            <Dialog open={openEdit} onClose={setOpenEdit}>
-                <DialogBackdrop className="fixed inset-0 bg-black/40" />
-                <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
-                        <DialogTitle className="text-lg font-bold">Edit Review</DialogTitle>
-
-                        <div className="mt-4">
-                            <label className="font-medium">Rating</label>
-                            <input
-                                className="w-full mt-1 border p-2 rounded"
-                                value={form.rating}
-                                onChange={(e) => setForm({ ...form, rating: e.target.value })}
-                            />
-
-                            <label className="font-medium mt-3 block">Review</label>
-                            <textarea
-                                className="w-full border p-2 rounded"
-                                value={form.review}
-                                onChange={(e) => setForm({ ...form, review: e.target.value })}
-                            />
-                        </div>
-
-                        <div className="mt-5 flex justify-end gap-2">
-                            <button className="px-4 py-2 bg-gray-100 rounded" onClick={() => setOpenEdit(false)}>
-                                Cancel
-                            </button>
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={saveReview}>
-                                Save
-                            </button>
-                        </div>
-                    </DialogPanel>
-                </div>
-            </Dialog>
-
-            {/* Share Modal */}
-            <Dialog open={openShare} onClose={setOpenShare}>
-                <DialogBackdrop className="fixed inset-0 bg-black/40" />
-                <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-                        <DialogTitle className="text-lg font-bold">Share Review</DialogTitle>
-
-                        <div className="mt-4 space-y-2">
-                            {users.map((user) => (
-                                <label
-                                    key={user.uid}
-                                    className="flex items-center gap-3 p-2 border rounded cursor-pointer"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        value={user.uid}
-                                        checked={selectedUserIds.includes(user.uid)}
-                                        onChange={(e) => {
-                                            const id = Number(e.target.value);
-                                            setSelectedUserIds((prev) =>
-                                                prev.includes(id)
-                                                    ? prev.filter((v) => v !== id)
-                                                    : [...prev, id]
-                                            );
-                                        }}
-                                    />
-                                    <div>
-                                        <p className="font-medium">{user.firstname} {user.lastname}</p>
-                                        <p className="text-xs text-gray-600">{user.email}</p>
-                                    </div>
-                                </label>
-                            ))}
-                        </div>
-
-                        <div className="mt-5 flex justify-end gap-2">
-                            <button className="px-4 py-2 bg-gray-100 rounded" onClick={() => setOpenShare(false)}>
-                                Cancel
-                            </button>
-                            <button className="px-4 py-2 bg-green-600 text-white rounded" onClick={saveShare}>
-                                Share
-                            </button>
-                        </div>
-                    </DialogPanel>
-                </div>
-            </Dialog>
-
-            <ConfirmDelete open={openDelete} onClose={() => setOpenDelete(false)} onConfirm={confirmDelete} />
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-100 rounded"
+                onClick={() => setOpenEdit(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+                onClick={saveReview}
+              >
+                Save
+              </button>
+            </div>
+          </DialogPanel>
         </div>
-    );
+      </Dialog>
+
+      {/* Share Modal */}
+      <Dialog open={openShare} onClose={setOpenShare}>
+        <DialogBackdrop className="fixed inset-0 bg-black/40" />
+
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <DialogPanel className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <DialogTitle className="text-lg font-bold mb-3">
+              Share Review
+            </DialogTitle>
+
+            {/* Search Box */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search users by name or email..."
+                className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => {
+                  setSearch(e.target.value.toLowerCase());
+                }}
+              />
+            </div>
+
+            {/* User List */}
+            <div className="max-h-72 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+              {users
+                .filter((u) => {
+                  const term = search?.trim() || "";
+                  return (
+                    u.email.toLowerCase().includes(term) ||
+                    `${u.firstname} ${u.lastname}`.toLowerCase().includes(term)
+                  );
+                })
+                .map((user) => (
+                  <label
+                    key={user.uid}
+                    className="flex items-center justify-between bg-white hover:bg-gray-100 transition p-2 rounded mb-1 cursor-pointer border"
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        value={user.uid}
+                        checked={selectedUserIds.includes(user.uid)}
+                        onChange={(e) => {
+                          const id = Number(e.target.value);
+                          setSelectedUserIds((prev) =>
+                            prev.includes(id)
+                              ? prev.filter((v) => v !== id)
+                              : [...prev, id]
+                          );
+                        }}
+                        className="h-4 w-4"
+                      />
+
+                      <div className="leading-tight">
+                        <p className="font-medium text-sm">
+                          {user.firstname} {user.lastname}
+                        </p>
+                        <p className="text-xs text-gray-600">{user.email}</p>
+                      </div>
+                    </div>
+                  </label>
+                ))}
+
+              {/* No users found */}
+              {users.filter((u) => {
+                const term = search?.trim() || "";
+                return (
+                  u.email.toLowerCase().includes(term) ||
+                  `${u.firstname} ${u.lastname}`.toLowerCase().includes(term)
+                );
+              }).length === 0 && (
+                <p className="text-center text-gray-500 text-sm py-6">
+                  No matching users found
+                </p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+                onClick={() => setOpenShare(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                onClick={saveShare}
+              >
+                Share
+              </button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      <ConfirmDelete
+        open={openDelete}
+        onClose={() => setOpenDelete(false)}
+        onConfirm={confirmDelete}
+      />
+    </div>
+  );
 };
 
 export default MyReviews;
