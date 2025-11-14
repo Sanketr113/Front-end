@@ -75,6 +75,10 @@ export const shareReview = async (reviewId, userIds) => {
   }
 };
 
+export const deleteReview = async (reviewId) => {
+    //TODO
+}
+
 export const postReviews = async (data) => {
   try {
     const response = await api.post("/reviews", data);

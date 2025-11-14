@@ -1,109 +1,106 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import ProfileForm from "./ProfileForm";
 import ChangePassword from "./ChangePassword";
+import { getProfile } from "../../apis/userApi";
 
 const Profile = () => {
-  const [open, setOpen] = useState(false);
+  const [openProfile, setOpenProfile] = useState(false);
   const [openPassword, setOpenPassword] = useState(false);
 
-  const handleEditProfile = () => {};
+  const [user, setUser] = useState(null);
+
+  const loadUser = async () => {
+    const  data  = await getProfile();
+    console.log(data.birth)
+    setUser(data);
+  };
+
+  useEffect(() => {
+    loadUser();
+  }, []);
 
   return (
-    <div>
-      <div className="navbar bg-base-100 shadow-sm">
-        <div className="flex-1">
-          <a className="btn btn-ghost text-xl">HEllo User</a>
+    <div className="max-w-3xl mx-auto p-6">
+      {/* Profile Card */}
+      <div className="bg-white shadow-lg rounded-xl p-8 flex flex-col items-center gap-6 border border-gray-100">
+        {/* Avatar */}
+        <div className="avatar">
+          <div className="w-28 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            <img
+              src={
+                user?.avatar ||
+                "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+              }
+              alt="profile"
+            />
+          </div>
         </div>
-        <div className="flex gap-2">
+
+        {/* User Info */}
+        <div className="text-center space-y-1">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {user ? `${user.firstname} ${user.lastname}` : "Loading..."}
+          </h2>
+          <p className="text-gray-500">{user?.email}</p>
+          <p className="text-gray-500">{user?.mobile}</p>
+          <p className="text-gray-500">
+            {user?.birth ? `DOB: ${user.birth}` : ""}
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4 mt-4">
           <button
             className="btn btn-primary"
-            onClick={() => {
-              setOpenPassword(true);
-            }}
+            onClick={() => setOpenProfile(true)}
+          >
+            Edit Profile
+          </button>
+
+          <button
+            className="btn btn-outline btn-primary"
+            onClick={() => setOpenPassword(true)}
           >
             Change Password
           </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            edit profile
-          </button>
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="w-10 rounded-full">
-                <img
-                  alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                />
-              </div>
-            </div>
-            <ul
-              tabIndex="-1"
-              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-            >
-              <li>
-                <a className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
-                </a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
 
-      <div>
-        <Dialog open={open} onClose={setOpen} className="relative z-10">
-          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <DialogPanel
-                transition
-                className="relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-              >
-                <ProfileForm />
-              </DialogPanel>
-            </div>
-          </div>
-        </Dialog>
+      {/* ====================== MODALS =========================== */}
 
-        <Dialog
-          open={openPassword}
-          onClose={setOpenPassword}
-          className="relative z-10"
-        >
-          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-              <DialogPanel
-                transition
-                className="relative transform overflow-hidden rounded-lg bg-gray-800 text-left shadow-xl outline -outline-offset-1 outline-white/10 transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-              >
-                <ChangePassword />
-              </DialogPanel>
-            </div>
-          </div>
-        </Dialog>
-      </div>
+      {/* Edit Profile Modal */}
+      <Dialog open={openProfile} onClose={setOpenProfile} className="relative z-50">
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <DialogPanel className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
+            <DialogTitle className="text-xl font-semibold mb-4">
+              Edit Profile
+            </DialogTitle>
+            <ProfileForm />
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      {/* Change Password Modal */}
+      <Dialog open={openPassword} onClose={setOpenPassword} className="relative z-50">
+        <DialogBackdrop className="fixed inset-0 bg-black/30" />
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <DialogPanel className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
+            <DialogTitle className="text-xl font-semibold mb-4">
+              Change Password
+            </DialogTitle>
+            <ChangePassword />
+          </DialogPanel>
+        </div>
+      </Dialog>
     </div>
   );
 };

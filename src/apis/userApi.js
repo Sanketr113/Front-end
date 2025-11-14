@@ -1,11 +1,17 @@
 import api from "./axiosInstance";
 import { BASE_URL } from "./config";
 
-
 export const getProfile = async () => {
   try {
     const response = await api.get(`${BASE_URL}/users/me`);
-    return response.data;
+    const { data } = response.data;
+
+    if (data?.birth) {
+      const d = new Date(data.birth);
+      data.birth = d.toISOString().split("T")[0]; // "YYYY-MM-DD"
+    }
+
+    return data;
   } catch (error) {
     return {
       status: "failed",

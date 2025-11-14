@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BASE_URL } from "./config";
 
 export const login = async (email, password) => {
   try {
