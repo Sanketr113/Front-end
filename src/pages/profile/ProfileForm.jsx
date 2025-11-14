@@ -1,30 +1,45 @@
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_URL } from "../../api/config";
+import { BASE_URL } from "../../apis/config";
+import { getProfile, updateProfile } from "../../apis/userApi";
+import { toast } from "react-toastify";
 
 export default function ProfileForm() {
+  const [email, setEmail] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [birth, setBirth] = useState("");
 
-    const [email, setEmail] = useState("")
-    const [firstname, setFirstName] = useState("")
-    const [lastname, setLastName] = useState("")
-    const [mobile, setMobile] = useState("")
-    const [birth, setBirth] = useState("")
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await updateProfile({
+      email,
+      birth,
+      firstname,
+      lastname,
+      mobile,
+    });
+    if (response.status == "success") {
+      toast.success("profile updates succesfully");
+    } else toast.error(response.error);
+  };
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault();
-        console.log(email);
-        console.log(birth)
-        const response = await axios.put(`${API_URL}/users`,{
-            email,
-            birth,
-            firstname,
-            lastname,
-            mobile
-        })
-        console.log(response)
-    }
+  const loadUser = async () => {
+    const { data } = await getProfile();
+    const user = data;
+    setFirstName(user.firstname);
+    setLastName(user.lastname);
+    setBirth(user.birth);
+    setEmail(user.email);
+    setMobile(user.mobile);
+  };
+
+  useEffect(() => {
+    loadUser();
+  }, []);
 
   return (
     <form class="max-w-md mx-auto text-white">
@@ -35,7 +50,10 @@ export default function ProfileForm() {
           id="floating_email"
           class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
           placeholder=" "
-          onChange={(e)=>{setEmail(e.target.value)}}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
           required
         />
         <label
@@ -52,14 +70,17 @@ export default function ProfileForm() {
           id="floating_password"
           class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
           placeholder=" "
-          onChange={(e)=>{setBirth(e.target.value)}}
+          value={birth}
+          onChange={(e) => {
+            setBirth(e.target.value);
+          }}
           required
         />
         <label
           for="floating_password"
           class="absolute text-sm text-body duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 peer-focus:text-fg-brand peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
         >
-          Date
+          Birthdate
         </label>
       </div>
       <div class="grid md:grid-cols-2 md:gap-6">
@@ -70,7 +91,10 @@ export default function ProfileForm() {
             id="floating_first_name"
             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
             placeholder=" "
-            onChange={(e)=>{setFirstName(e.target.value)}}
+            value={firstname}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+            }}
             required
           />
           <label
@@ -87,7 +111,10 @@ export default function ProfileForm() {
             id="floating_last_name"
             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
             placeholder=" "
-            onChange={(e)=>{setLastName(e.target.value)}}
+            value={lastname}
+            onChange={(e) => {
+              setLastName(e.target.value);
+            }}
             required
           />
           <label
@@ -107,7 +134,10 @@ export default function ProfileForm() {
             id="floating_phone"
             class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
             placeholder=" "
-            onChange={(e)=>{setMobile(e.target.value)}}
+            value={mobile}
+            onChange={(e) => {
+              setMobile(e.target.value);
+            }}
             required
           />
           <label

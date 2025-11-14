@@ -1,9 +1,8 @@
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useState } from "react";
 import axios from "axios";
-import { API_URL } from "../../api/config";
+import { BASE_URL } from "../../apis/config";
 import { toast } from "react-toastify";
+import { updatePassword } from "../../apis/userApi";
 
 export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -12,13 +11,10 @@ export default function ChangePassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(confirmPassword);
-    console.log(newPassword);
     if (confirmPassword === newPassword) {
-      const response = await axios.put(`${API_URL}/users`, {
-        newPassword,
-      });
+      const response = await updatePassword(newPassword);
       console.log(response);
+      toast.success("password updated successfully");
     } else {
       toast.error("passwords do not match");
     }
@@ -28,7 +24,7 @@ export default function ChangePassword() {
     <form class="max-w-md mx-auto text-white">
       <div class="relative z-0 w-full mb-5 group ">
         <input
-          type="email"
+          type="password"
           name="floating_email"
           id="floating_email"
           class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
@@ -47,7 +43,7 @@ export default function ChangePassword() {
       </div>
       <div class="relative z-0 w-full mb-5 group ">
         <input
-          type="email"
+          type="password"
           name="floating_email"
           id="floating_email"
           class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
@@ -66,7 +62,7 @@ export default function ChangePassword() {
       </div>
       <div class="relative z-0 w-full mb-5 group ">
         <input
-          type="email"
+          type="password"
           name="floating_email"
           id="floating_email"
           class="block py-2.5 px-0 w-full text-sm text-heading bg-transparent border-0 border-b-2 border-default-medium appearance-none focus:outline-none focus:ring-0 focus:border-brand peer"
