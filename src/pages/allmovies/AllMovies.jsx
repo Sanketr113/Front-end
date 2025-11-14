@@ -16,6 +16,7 @@ const AllMovies = () => {
         rating: 0,
         review: "",
     });
+
     const [movie, setmovie] = useState();
 
     const Movies = [
@@ -122,7 +123,7 @@ const AllMovies = () => {
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                                         <DialogTitle
                                             as="h3"
-                                            className="text-base font-semibold text-gray-900"></DialogTitle>
+                                            className="text-base font-semibold text-gray-900">{ movie}</DialogTitle>
                                         <div className="mt-2">
                                             <div className="rating">
                                                 <input
