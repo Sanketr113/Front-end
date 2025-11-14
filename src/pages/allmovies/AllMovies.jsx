@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {
     Dialog,
@@ -7,6 +7,7 @@ import {
     DialogTitle,
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { getAllMovies, postReviews } from "../../apis/reviewAPI";
 
 const AllMovies = () => {
     const [open, setOpen] = useState(false);
@@ -19,23 +20,46 @@ const AllMovies = () => {
 
     const [movie, setmovie] = useState();
 
-    const Movies = [
-        {
-            movie_id: 1,
-            title: "Titanic",
-            release_date: "1995-12-24T18:30:00.000Z",
-        },
-        {
-            movie_id: 2,
-            title: "Mission Impossible",
-            release_date: "1995-12-24T18:30:00.000Z",
-        },
-        {
-            movie_id: 3,
-            title: "The Golden Gun",
-            release_date: "1995-12-24T18:30:00.000Z",
-        },
-    ];
+    // const Movies = [
+    //     {
+    //         movie_id: 1,
+    //         title: "Titanic",
+    //         release_date: "1995-12-24T18:30:00.000Z",
+    //     },
+    //     {
+    //         movie_id: 2,
+    //         title: "Mission Impossible",
+    //         release_date: "1995-12-24T18:30:00.000Z",
+    //     },
+    //     {
+    //         movie_id: 3,
+    //         title: "The Golden Gun",
+    //         release_date: "1995-12-24T18:30:00.000Z",
+    //     },
+    // ];
+
+    const [Movies, setMovies] = useState([]);
+
+        const [loading, setLoading] = useState(true);
+    
+        const loadReviews = async () => {
+            setLoading(true);
+    
+            const response = await getAllMovies();
+    
+            if (response.status === "success") {
+                setMovies(response.data);
+            } else {
+                toast.error("Failed to load reviews");
+            }
+    
+            setLoading(false);
+        };
+    
+        useEffect(() => {
+            loadReviews();
+        }, []);
+    
 
     const addReview = (movie_id, title) => {
         setOpen(true);
@@ -56,6 +80,7 @@ const AllMovies = () => {
     const saveReview = () => {
         setOpen(false);
         console.log(form);
+        postReviews(form);
     };
     return (
         <div>

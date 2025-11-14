@@ -7,11 +7,14 @@ import AllReviews from "./pages/allreviews/AllReviews";
 import MyReviews from "./pages/myreviews/MyReviews";
 import Profile from "./pages/profile/Profile";
 import SharedWithMe from "./pages/sharedwithme/SharedWithMe";
-import AllMovies from "./pages/allmovies/AllMovies";
+
+import AllMovies from "./pages/allmovies/allmovies";
+import ProtectedRoute from "./components/ProtectedRoutes";
 
 export default function App() {
     return (
         <Routes>
+            {/* Public Routes */}
             <Route
                 path="/"
                 element={<Login />}
@@ -20,28 +23,58 @@ export default function App() {
                 path="/register"
                 element={<Register />}
             />
+
+            {/* Protected Routes */}
             <Route
                 path="/home"
-                element={<Home />}>
+                element={
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>
+                }>
                 <Route
                     path="allreviews"
-                    element={<AllReviews />}
+                    element={
+                        <ProtectedRoute>
+                            <AllReviews />
+                        </ProtectedRoute>
+                    }
                 />
+
                 <Route
                     path="allmovies"
-                    element={<AllMovies />}
+                    element={
+                        <ProtectedRoute>
+                            <AllMovies />
+                        </ProtectedRoute>
+                    }
                 />
+
                 <Route
                     path="myreviews"
-                    element={<MyReviews />}
+                    element={
+                        <ProtectedRoute>
+                            <MyReviews />
+                        </ProtectedRoute>
+                    }
                 />
+
                 <Route
                     path="profile"
-                    element={<Profile />}
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
                 />
+
                 <Route
                     path="sharedwithme"
-                    element={<SharedWithMe />}
+                    element={
+                        <ProtectedRoute>
+                            <SharedWithMe />
+                        </ProtectedRoute>
+                    }
                 />
             </Route>
         </Routes>
