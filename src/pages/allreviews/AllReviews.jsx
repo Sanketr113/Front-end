@@ -1,78 +1,71 @@
 import React, { useEffect, useState } from "react";
 import { getAllReviews } from "../../apis/reviewAPI";
 import { toast } from "react-toastify";
+import ReviewCard from "../../components/ReviewCard";
+import ReviewCardHorizontal from "../../components/ReviewCardHorizontal";
 
 const AllReviews = () => {
-    const [reviews, setReviews] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const loadReviews = async () => {
-        setLoading(true);
+  const [view, setView] = useState("grid"); // grid | list
 
-        const response = await getAllReviews();
+  const loadReviews = async () => {
+    setLoading(true);
 
-        if (response.status === "success") {
-            setReviews(response.data);
-        } else {
-            toast.error("Failed to load reviews");
-        }
+    const response = await getAllReviews();
 
-        setLoading(false);
-    };
+    if (response.status === "success") {
+      setReviews(response.data);
+    } else {
+      toast.error("Failed to load reviews");
+    }
 
-    useEffect(() => {
-        loadReviews();
-    }, []);
+    setLoading(false);
+  };
 
-    return (
-        <div>
-            <div className="bg-white">
-                <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-                    <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-                        All Reviews
-                    </h2>
+  useEffect(() => {
+    loadReviews();
+  }, []);
 
-                    {loading ? (
-                        <p className="mt-6 text-gray-500">Loading reviews...</p>
-                    ) : (
-                        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                            {reviews.map((review) => (
-                                <div
-                                    key={review.rid}
-                                    className="group relative">
-                                    <div className="bg-white border border-gray-200 shadow-md w-full max-w-sm rounded-lg overflow-hidden mx-auto mt-4">
-                                        <div className="p-6">
-                                            <h1 className="text-lg font-semibold">
-                                                {review.title}
-                                            </h1>
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold">All Reviews</h2>
 
-                                            <h3 className="font-semibold">
-                                                Rating: {review.rating}
-                                            </h3>
-
-                                            <h3 className="font-semibold">
-                                                Reviewed By: {review.firstname}{" "}
-                                                {review.lastname}
-                                            </h3>
-
-                                            <p className="mt-2">
-                                                {review.review}
-                                            </p>
-
-                                            <p className="mt-2 text-sm text-slate-500">
-                                                Modified At:{" "}
-                                                {review.modified.split("T")[0]}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
+        <div className="btn-group">
+          <button
+            className={`btn btn-sm ${view === "grid" ? "btn-active" : ""}`}
+            onClick={() => setView("grid")}
+          >
+            Grid
+          </button>
+          <button
+            className={`btn btn-sm ${view === "list" ? "btn-active" : ""}`}
+            onClick={() => setView("list")}
+          >
+            List
+          </button>
         </div>
-    );
+      </div>
+
+      {loading ? (
+        <p className="text-gray-500">Loading reviews...</p>
+      ) : view === "grid" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {reviews.map((r) => (
+            <ReviewCard key={r.rid} review={r} />
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {reviews.map((r) => (
+            <ReviewCardHorizontal key={r.rid} review={r} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default AllReviews;

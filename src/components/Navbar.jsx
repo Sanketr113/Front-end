@@ -1,55 +1,94 @@
-import { Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function Navbar({ onMenuClick }) {
-  return (
-      <div className="navbar bg-base-100 shadow-md">
-          <div className="flex-none">
-              <button
-                  onClick={onMenuClick}
-                  className="btn btn-square btn-ghost lg:hidden">
-                  <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className="inline-block w-6 h-6 stroke-current">
-                      <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M4 6h16M4 12h16M4 18h16"
-                      />
-                  </svg>
-              </button>
-          </div>
-          <div className="flex-1">
-              <Link
-                  to="/"
-                  className="text-xl font-bold text-primary">
-                  Review App
-              </Link>
-          </div>
-          <div className="flex-none hidden lg:block">
-              <ul className="menu menu-horizontal px-1">
-                  <li>
-                      <Link to="allmovies">All Movies</Link>
-                  </li>
-                  <li>
-                      <Link to="myreviews">My Reviews</Link>
-                  </li>
-                  <li>
-                      <Link to="sharedwithme">Shared With Me</Link>
-                  </li>
+  const linkClasses =
+    "px-3 py-2 rounded-md font-medium transition hover:text-primary hover:bg-base-200";
 
-                  <li>
-                      <Link to="allreviews">All Reviews</Link>
-                  </li>
-                  <li>
-                      <Link to="profile">Profile</Link>
-                  </li>
-              </ul>
-          </div>
+  const activeClasses =
+    "text-primary font-semibold bg-base-200 shadow-sm";
+
+  return (
+    <div className="navbar bg-base-100/80 backdrop-blur-md shadow-md sticky top-0 z-50">
+      {/* Left Section - Menu Button on Mobile */}
+      <div className="flex-none lg:hidden">
+        <button
+          onClick={onMenuClick}
+          className="btn btn-ghost btn-square"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
       </div>
+
+      {/* Logo */}
+      <div className="flex-1">
+        <Link
+          to="/"
+          className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent"
+        >
+          Review App
+        </Link>
+      </div>
+
+      {/* Desktop Menu */}
+      <div className="flex-none hidden lg:block">
+        <ul className="menu menu-horizontal px-1 gap-2">
+          <li>
+            <NavLink
+              to="/home/allmovies"
+              className={({ isActive }) =>
+                isActive ? activeClasses : linkClasses
+              }
+            >
+              All Movies
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/home/myreviews"
+              className={({ isActive }) =>
+                isActive ? activeClasses : linkClasses
+              }
+            >
+              My Reviews
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/home/sharedwithme"
+              className={({ isActive }) =>
+                isActive ? activeClasses : linkClasses
+              }
+            >
+              Shared With Me
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/home/allreviews"
+              className={({ isActive }) =>
+                isActive ? activeClasses : linkClasses
+              }
+            >
+              All Reviews
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/home/profile"
+              className={({ isActive }) =>
+                isActive ? activeClasses : linkClasses
+              }
+            >
+              Profile
+            </NavLink>
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 }
-
-

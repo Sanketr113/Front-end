@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../apis/userAPI";
+import { login } from "../../apis/authAPI";
 import { toast } from "react-toastify";
 
 const Login = () => {
